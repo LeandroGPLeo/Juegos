@@ -13,7 +13,7 @@
             flex-direction: column;
             background-color: #f0f0f0;
         }
-        .arrow-button {
+        .button {
             font-size: 2em;
             margin: 10px;
             padding: 20px;
@@ -56,52 +56,68 @@
 </head>
 <body>
     <div id="game-container">
-        <h1>Selecciona la flecha correcta</h1>
+        <h1>Selecciona la dirección correcta</h1>
         <div id="instruction-container">
-            <p id="instruction"></p>
+            <p id="instruction">Elige una dirección para comenzar:</p>
+            <div id="selection-screen">
+                <button class="button" onclick="setDirection('izquierda')">⬅️</button>
+                <button class="button" onclick="setDirection('derecha')">➡️</button>
+            </div>
         </div>
-        <div class="arrow-grid">
-            <button class="arrow-button" onclick="checkArrow('izquierda')">⬅️</button>
-            <button class="arrow-button" onclick="checkArrow('derecha')">➡️</button>
+        <div class="arrow-grid" id="game-screen" style="display:none;">
+            <button class="button" id="left-arrow" onclick="checkArrow('izquierda')">⬅️</button>
+            <button class="button" id="right-arrow" onclick="checkArrow('derecha')">➡️</button>
         </div>
         <button id="restart-button" onclick="restartGame()">Volver a empezar</button>
     </div>
     <script>
         let correctDirection;
 
-        function setInstruction() {
-            const directions = ['izquierda', 'derecha'];
-            correctDirection = directions[Math.floor(Math.random() * directions.length)];
-            document.getElementById('instruction').textContent = `Selecciona la flecha hacia la ${correctDirection}`;
+        function setDirection(direction) {
+            correctDirection = direction;
+            document.getElementById('instruction').textContent = `Selecciona la flecha hacia la ${direction}`;
+            document.getElementById('selection-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
         }
 
         function checkArrow(direction) {
-            const buttons = document.querySelectorAll('.arrow-button');
+            const leftArrow = document.getElementById('left-arrow');
+            const rightArrow = document.getElementById('right-arrow');
             
-            buttons.forEach(button => {
-                button.classList.remove('correct', 'incorrect');
-                if (button.textContent.includes('⬅️') && correctDirection === 'izquierda') {
-                    button.classList.add('correct');
-                } else if (button.textContent.includes('➡️') && correctDirection === 'derecha') {
-                    button.classList.add('correct');
+            leftArrow.classList.remove('correct', 'incorrect');
+            rightArrow.classList.remove('correct', 'incorrect');
+            
+            if (direction === correctDirection) {
+                if (direction === 'izquierda') {
+                    leftArrow.classList.add('correct');
+                    rightArrow.classList.add('incorrect');
                 } else {
-                    button.classList.add('incorrect');
+                    leftArrow.classList.add('incorrect');
+                    rightArrow.classList.add('correct');
                 }
-            });
+            } else {
+                if (direction === 'izquierda') {
+                    leftArrow.classList.add('incorrect');
+                } else {
+                    rightArrow.classList.add('incorrect');
+                }
+            }
 
             document.getElementById('restart-button').style.display = 'block';
         }
 
         function restartGame() {
-            const buttons = document.querySelectorAll('.arrow-button');
+            const buttons = document.querySelectorAll('.button');
             buttons.forEach(button => {
                 button.classList.remove('correct', 'incorrect');
             });
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('selection-screen').style.display = 'flex';
+            document.getElementById('instruction').textContent = 'Elige una dirección para comenzar:';
             document.getElementById('restart-button').style.display = 'none';
-            setInstruction();
         }
 
-        window.onload = setInstruction;
+        window.onload = restartGame;
     </script>
 </body>
 </html>
